@@ -1,0 +1,40 @@
+{
+  "name": "website-downloader",
+  "version": "0.1.0",
+  "description": "Download a website and serve it locally",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.framerdownloader.app",
+    "productName": "Framer Downloader",
+    "win": {
+      "target": "portable",
+      "icon": "media/logo.png",
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "FramerDownloader.exe"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "downloader.js",
+      "page-renderer.js",
+      "server.js",
+      "index.html",
+      "renderer.js",
+      "package.json",
+      "media/**"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^40.6.0",
+    "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0"
+  }
+}

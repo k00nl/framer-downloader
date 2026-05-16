@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'" />
+    <title>Framer Downloader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="flex min-h-screen flex-col bg-gray-50 text-gray-900 antialiased">
+    <div
+      class="sticky top-0 z-10 flex h-11 items-center gap-2 border-b border-gray-200 bg-white pl-4"
+      style="-webkit-app-region: drag; padding-right: 140px;"
+    >
+      <img src="media/logo.png" alt="" class="h-6 w-6 rounded" />
+      <span class="text-sm font-medium text-gray-700">Framer Downloader</span>
+    </div>
+
+    <main class="mx-auto w-full max-w-2xl flex-1 px-6 py-8">
+      <nav class="mb-6 flex gap-1 border-b border-gray-200">
+        <button
+          data-tab="download"
+          class="tab-btn -mb-px border-b-2 border-gray-900 px-4 py-2 text-sm font-medium text-gray-900"
+        >
+          Download
+        </button>
+        <button
+          data-tab="sites"
+          class="tab-btn -mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-800"
+        >
+          Sites
+        </button>
+      </nav>
+
+      <!-- ── Download tab ── -->
+      <section data-panel="download">
+        <div class="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div>
+            <label for="url" class="block text-sm font-medium text-gray-700">
+              Website URL
+            </label>
+            <input
+              id="url"
+              type="text"
+              placeholder="k00.nl"
+              class="mt-1.5 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">
+              Download location
+            </label>
+            <div class="mt-1.5 flex gap-2">
+              <input
+                id="dest"
+                type="text"
+                readonly
+                placeholder="No folder selected"
+                class="block w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-600 shadow-sm outline-none"
+              />
+              <button
+                id="pick"
+                class="shrink-0 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
+              >
+                Choose…
+              </button>
+            </div>
+            <p class="mt-1.5 text-xs text-gray-400">
+              Saved into a <span class="font-medium">sitename</span> subfolder, e.g. <code>k00.nl/</code>.
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between pt-1">
+            <p id="status" class="text-sm text-gray-500"></p>
+            <button
+              id="download"
+              class="rounded-lg bg-gray-900 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Download
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div id="progress-card" class="mt-6 hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <p id="discovered" class="text-sm text-gray-600">Discovering pages…</p>
+
+          <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-100">
+            <div id="bar" class="h-full w-0 rounded-full bg-gray-900 transition-all duration-300"></div>
+          </div>
+
+          <div class="mt-5 grid grid-cols-3 gap-3 sm:grid-cols-6" id="counters">
+            <div class="rounded-lg bg-gray-50 px-3 py-2 text-center">
+              <div id="c-pages" class="text-lg font-semibold text-gray-900">0</div>
+              <div class="text-xs text-gray-500">Pages</div>
+            </div>
+            <div class="rounded-lg bg-gray-50 px-3 py-2 text-center">
+              <div id="c-images" class="text-lg font-semibold text-gray-900">0</div>
+              <div class="text-xs text-gray-500">Images</div>
+            </div>
+            <div class="rounded-lg bg-gray-50 px-3 py-2 text-center">
+              <div id="c-js" class="text-lg font-semibold text-gray-900">0</div>
+              <div class="text-xs text-gray-500">JS</div>
+            </div>
+            <div class="rounded-lg bg-gray-50 px-3 py-2 text-center">
+              <div id="c-css" class="text-lg font-semibold text-gray-900">0</div>
+              <div class="text-xs text-gray-500">CSS</div>
+            </div>
+            <div class="rounded-lg bg-gray-50 px-3 py-2 text-center">
+              <div id="c-fonts" class="text-lg font-semibold text-gray-900">0</div>
+              <div class="text-xs text-gray-500">Fonts</div>
+            </div>
+            <div class="rounded-lg bg-gray-50 px-3 py-2 text-center">
+              <div id="c-other" class="text-lg font-semibold text-gray-900">0</div>
+              <div class="text-xs text-gray-500">Other</div>
+            </div>
+          </div>
+
+          <details class="mt-4">
+            <summary class="cursor-pointer text-xs font-medium uppercase tracking-wide text-gray-400">
+              Log
+            </summary>
+            <pre id="log" class="mt-2 h-48 overflow-auto rounded-lg bg-gray-50 px-3 py-2 text-xs leading-relaxed text-gray-600"></pre>
+          </details>
+        </div>
+      </section>
+
+      <!-- ── Sites tab ── -->
+      <section data-panel="sites" class="hidden">
+        <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div id="sites-empty" class="px-6 py-12 text-center text-sm text-gray-400">
+            No sites downloaded yet.
+          </div>
+          <ul id="sites-list" class="divide-y divide-gray-100"></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pb-8 text-center text-xs text-gray-400">
+      made by
+      <a id="footer-link" href="https://k00.nl" class="font-medium text-gray-500 hover:text-gray-700">k00.nl</a>
+    </footer>
+
+    <!-- ── Confirm modal ── -->
+    <div
+      id="modal"
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4"
+    >
+      <div class="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+        <h2 id="modal-title" class="text-base font-semibold text-gray-900"></h2>
+        <p id="modal-body" class="mt-2 text-sm text-gray-500"></p>
+        <div class="mt-6 flex justify-end gap-2">
+          <button
+            id="modal-cancel"
+            class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            id="modal-confirm"
+            class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>
