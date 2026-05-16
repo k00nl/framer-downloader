@@ -33,6 +33,19 @@ $("footer-link").addEventListener("click", (e) => {
   window.api.openExternal("https://k00.nl");
 });
 
+$("marketplace-link").addEventListener("click", (e) => {
+  e.preventDefault();
+  window.api.openExternal("https://www.framer.com/marketplace/templates/");
+});
+
+// Status line: red + bold for errors, muted grey otherwise.
+function setStatus(msg, isError) {
+  status.textContent = msg;
+  status.className = isError
+    ? "text-sm font-medium text-red-600"
+    : "text-sm text-gray-500";
+}
+
 // ── Confirm modal ──
 const modal = $("modal");
 let modalResolve = null;
@@ -148,13 +161,24 @@ downloadBtn.addEventListener("click", async () => {
   const url = urlInput.value.trim();
   const destination = destInput.value.trim();
 
-  if (!url) return (status.textContent = "Enter a URL first.");
-  if (!destination) return (status.textContent = "Choose a download location first.");
+  if (!url) {
+    setStatus("Enter a URL first.", true);
+    urlInput.focus();
+    return;
+  }
+  if (!destination) {
+    setStatus("Choose a download location first.", true);
+    pickBtn.focus();
+    return;
+  }
 
   // Ask before overwriting an existing download.
   let overwrite = false;
   const check = await window.api.checkSiteExists(url, destination);
-  if (check.error) return (status.textContent = check.error);
+  if (check.error) {
+    setStatus(check.error, true);
+    return;
+  }
   if (check.exists) {
     const ok = await showConfirm(
       "Site already exists",
@@ -163,13 +187,13 @@ downloadBtn.addEventListener("click", async () => {
       "primary"
     );
     if (!ok) {
-      status.textContent = "Cancelled.";
+      setStatus("Cancelled.");
       return;
     }
     overwrite = true;
   }
 
-  status.textContent = "";
+  setStatus("");
   log.textContent = "";
   progressCard.classList.remove("hidden");
   discovered.textContent = "Discovering pages…";
@@ -181,9 +205,10 @@ downloadBtn.addEventListener("click", async () => {
 
   setRunning(false);
   if (!res.ok) {
-    status.textContent = res.cancelled ? "Cancelled." : res.error || "Failed.";
+    if (res.cancelled) setStatus("Cancelled.");
+    else setStatus(res.error || "Failed.", true);
   } else {
-    status.textContent = `Done. Saved to ${res.name}. See the Sites tab.`;
+    setStatus(`Done. Saved to ${res.name}. See the Sites tab.`);
   }
 });
 

@@ -115,12 +115,25 @@ function createMainWindow() {
   });
 }
 
-app.whenReady().then(() => {
-  createMainWindow();
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+// Only one instance: a second launch focuses the existing window instead
+// of starting a rival process that fights over the disk/GPU cache.
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+} else {
+  app.on("second-instance", () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
   });
-});
+
+  app.whenReady().then(() => {
+    createMainWindow();
+    app.on("activate", () => {
+      if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+    });
+  });
+}
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
@@ -130,7 +143,10 @@ app.on("window-all-closed", () => {
 
 ipcMain.handle("get-config", () => {
   const cfg = loadConfig();
-  return { downloadPath: cfg.downloadPath || "", lastUrl: cfg.lastUrl || "k00.nl" };
+  return {
+    downloadPath: cfg.downloadPath || "",
+    lastUrl: cfg.lastUrl || "https://site.framer.website/",
+  };
 });
 
 ipcMain.handle("pick-folder", async () => {

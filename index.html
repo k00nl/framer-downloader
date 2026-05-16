@@ -33,6 +33,11 @@
 
       <!-- ── Download tab ── -->
       <section data-panel="download">
+        <p class="mb-4 text-sm text-gray-500">
+          Download Framer websites. Find them on the
+          <a id="marketplace-link" href="https://www.framer.com/marketplace/templates/" class="font-medium text-gray-700 underline hover:text-gray-900">marketplace</a>,
+          open any template, click Preview, and paste that URL below.
+        </p>
         <div class="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <div>
             <label for="url" class="block text-sm font-medium text-gray-700">
@@ -41,7 +46,7 @@
             <input
               id="url"
               type="text"
-              placeholder="k00.nl"
+              placeholder="https://site.framer.website/"
               class="mt-1.5 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
             />
           </div>
@@ -66,7 +71,8 @@
               </button>
             </div>
             <p class="mt-1.5 text-xs text-gray-400">
-              Saved into a <span class="font-medium">sitename</span> subfolder, e.g. <code>k00.nl/</code>.
+              Pick a parent folder. Each site is saved into its own subfolder
+              named after the site, e.g. <code>site.framer.website/</code>.
             </p>
           </div>
 
